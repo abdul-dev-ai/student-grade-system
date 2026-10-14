@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+const output = execFileSync(process.argv[2], ['--json-fixture'], { encoding: 'utf8' }).trim().split(/\r?\n/);
+const [snapshot, saved] = output.map((line) => JSON.parse(line));
+assert.equal(snapshot.students[0].name, 'Ési "quoted" \\ 李 <script>');
+assert.equal(snapshot.students[0].grade, 'F');
+assert.equal(snapshot.students[0].passed, false);
+assert.equal(snapshot.students[1].grade, 'A');
+assert.equal(snapshot.stats.average, 74.9995);
+assert.equal(snapshot.stats.passRate, 50);
+assert.deepEqual(snapshot.distribution.map((item) => item.count), [1, 0, 0, 0, 1]);
+assert.deepEqual(snapshot.distribution.map((item) => item.percentage), [50, 0, 0, 0, 50]);
+assert.equal(saved.version, 1);
+assert.equal(saved.students[0].score, 49.999);
+assert.equal(saved.students[0].name, snapshot.students[0].name);
+assert.equal(Object.hasOwn(saved.students[0], 'grade'), false);
+console.log('PASS: native C++ JSON output parses correctly in JavaScript; precision and escaping preserved.');

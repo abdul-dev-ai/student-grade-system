@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#153b36">
+  <meta name="description" content="A local student grade dashboard powered by a C++ fixed-size array and WebAssembly.">
+  <title>Gradebook — Student Grade Management</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6m2 3a5 5 0 0 1 3 5v2"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5C9 3 5 3 2 4v15c3-1 7-1 10 1 3-2 7-2 10-1V4c-3-1-7-1-10 1Zm0 0v15"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 17 19 3M7 3h12v12"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="m15 4 5 5M4 20l5-1L21 7l-5-5L4 14Z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="m7 7-5 5 5 5m10-10 5 5-5 5M14 3l-4 18"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 3v18h17M8 16v-5m5 5V6m5 10V9"/></symbol>
+  </svg>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <aside class="sidebar" aria-label="Main navigation">
+    <a class="brand" href="#overview"><span class="brand-mark"><svg><use href="#i-book"/></svg></span><span>gradebook<span class="brand-dot">.</span></span></a>
+    <div class="workspace"><span class="workspace-icon">U</span><div><strong>University workspace</strong><small>Academic management</small></div></div>
+    <p class="nav-label">WORKSPACE</p>
+    <nav>
+      <a class="nav-link active" href="#overview"><svg><use href="#i-grid"/></svg>Overview</a>
+      <a class="nav-link" href="#records"><svg><use href="#i-users"/></svg>Student records<span id="nav-count">0</span></a>
+      <button class="nav-link" id="guide-button"><svg><use href="#i-book"/></svg>Grading guide</button>
+    </nav>
+    <div class="sidebar-note"><span class="eyebrow">BUILT FOR LEARNING</span><h3>Small array.<br>Big possibilities.</h3><p>Every record, calculation and sort starts with C++.</p><button id="architecture-button">Explore the engine <span aria-hidden="true">↗</span></button><div class="array-art" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+    <div class="local-note"><span class="status-dot"></span><div><strong>Your data stays here</strong><small>Stored in this browser</small></div></div>
+  </aside>
+  <div class="page">
+    <header class="topbar"><div class="breadcrumb">Workspace <span>/</span> <strong>Overview</strong></div><div class="topbar-right"><span class="course-label">STUDENT GRADE MANAGEMENT</span><span class="avatar">GB</span></div></header>
+    <main id="main">
+      <section id="overview" class="page-heading"><div><div class="eyebrow">A CLEARER PICTURE OF YOUR CLASS</div><h1>Class overview<span>.</span></h1><p>Every student. Every score. All in one place.</p></div><button class="button primary" data-add data-engine disabled><svg><use href="#i-plus"/></svg>Add student</button></section>
+      <div id="engine-notice" class="notice" role="status"><strong>Starting the grade engine…</strong><span>Loading the C++ WebAssembly module.</span></div>
+      <div id="storage-notice" class="notice warning" role="alert" hidden><div id="storage-message"></div><div class="notice-actions"><button id="download-recovery" class="button small" hidden>Download saved data</button><button id="reset-storage" class="button small danger" hidden>Discard invalid data</button></div></div>
+      <section class="metrics" aria-label="Class statistics">
+        <article class="metric"><div class="metric-top"><span>Total students</span><span class="metric-icon mint"><svg><use href="#i-users"/></svg></span></div><div id="total-value" class="metric-value">—</div><div class="metric-caption"><span id="capacity-caption">1,000</span> available array slots</div></article>
+        <article class="metric"><div class="metric-top"><span>Class average</span><span class="metric-icon sand"><svg><use href="#i-chart"/></svg></span></div><div class="metric-value"><span id="average-value">—</span><small>/ 100</small></div><div class="metric-caption">Across all student scores</div></article>
+        <article class="metric"><div class="metric-top"><span>Highest score</span><span class="metric-icon lavender"><svg><use href="#i-arrow"/></svg></span></div><div class="metric-value"><span id="highest-value">—</span><small>/ 100</small></div><div class="metric-caption">Lowest score <strong id="lowest-value">—</strong></div></article>
+        <article class="metric"><div class="metric-top"><span>Pass rate</span><span class="metric-icon mint"><svg><use href="#i-check"/></svg></span></div><div class="metric-value"><span id="pass-value">—</span><small>%</small></div><div id="pass-caption" class="metric-caption">Pass mark: 50 / 100</div></article>
+      </section>
+      <section class="insights" aria-label="Class insights">
+        <article class="panel distribution"><div class="panel-heading"><div><h2>Grade distribution</h2><p>A breakdown of the entire class</p></div><span class="tag">LIVE OVERVIEW</span></div><div id="grade-chart" class="grade-chart" role="img" aria-label="No grade data yet"></div><div class="chart-baseline"><span>Grade bands</span><span id="distribution-total">No scores recorded</span></div></article>
+        <article class="performance"><div class="performance-top"><span class="eyebrow">CLASS SNAPSHOT</span><svg><use href="#i-chart"/></svg></div><h2>A little insight.<br>A better next step.</h2><p id="insight-text">Add your first student to see how your class is doing.</p><div class="performance-foot"><span class="status-dot"></span><span>Pass mark <strong>50 / 100</strong></span><button id="snapshot-guide" aria-label="View grading guide">↗</button></div></article>
+      </section>
+      <section id="records" class="panel records" aria-labelledby="records-title">
+        <div class="records-heading"><div class="title-line"><h2 id="records-title">Student records</h2><span id="record-count" class="count-chip">0</span></div><div class="record-tools"><button id="demo-button" class="button quiet small" data-engine disabled>Try sample data</button><button id="export-button" class="button small" data-engine disabled><svg><use href="#i-download"/></svg>Export backup</button></div></div>
+        <div class="table-toolbar"><label class="search"><svg><use href="#i-search"/></svg><span class="sr-only">Search by name or student ID</span><input id="search-input" type="search" placeholder="Search by name or student ID…" maxlength="120" data-engine disabled></label><div class="filters"><label><span class="sr-only">Filter by result</span><select id="status-filter" data-engine disabled><option value="all">All results</option><option value="pass">Pass only</option><option value="fail">Fail only</option></select></label><label><span class="sr-only">Sort students</span><select id="sort-select" data-engine disabled><option value="name:asc">Name: A to Z</option><option value="name:desc">Name: Z to A</option><option value="score:desc">Score: high to low</option><option value="score:asc">Score: low to high</option></select></label></div></div>
+        <div class="table-scroll"><table><thead><tr><th scope="col">STUDENT</th><th scope="col">STUDENT ID</th><th scope="col">EXAM SCORE</th><th scope="col">GRADE</th><th scope="col">RESULT</th><th scope="col" class="actions-header">ACTIONS</th></tr></thead><tbody id="student-rows"></tbody></table></div>
+        <div id="empty-state" class="empty-state"><span class="empty-icon"><svg><use href="#i-users"/></svg></span><h3 id="empty-title">Your class starts here</h3><p id="empty-description">Add a student and let Gradebook take care of the numbers.</p><button class="button primary small" id="empty-action" data-engine disabled>Add your first student</button></div>
+        <div class="table-footer"><span id="pagination-label" aria-live="polite">0 students</span><div class="pagination"><button id="previous-page" class="button small" disabled aria-label="Previous page">←</button><span id="page-label">Page 1 of 1</span><button id="next-page" class="button small" disabled aria-label="Next page">→</button></div></div>
+      </section>
+      <footer class="page-footer"><span>Made for thoughtful academic management.</span><span id="save-status">C++17 <span aria-hidden="true">·</span> WebAssembly <span aria-hidden="true">·</span> Local storage</span></footer>
+      <noscript><p class="notice warning">Enable JavaScript to load the WebAssembly grade engine and manage students.</p></noscript>
+    </main>
+  </div>
+  <dialog id="student-dialog" aria-labelledby="student-dialog-title"><form id="student-form"><div class="dialog-heading"><div><span class="eyebrow">STUDENT RECORD</span><h2 id="student-dialog-title">Add student</h2></div><button type="button" class="icon-button" data-close aria-label="Close student form"><svg><use href="#i-close"/></svg></button></div><p class="dialog-description">Enter their details. Grades are calculated automatically.</p><label class="field">Student ID<input id="student-id" name="id" required maxlength="24" pattern="[A-Za-z0-9_-]+" placeholder="e.g. STU-001" autocomplete="off"><small>Unique ID · Letters, numbers, hyphens and underscores</small></label><label class="field">Full name<input id="student-name" name="name" required maxlength="120" placeholder="e.g. Ama Mensah" autocomplete="off"></label><label class="field">Examination score <span class="score-field"><input id="student-score" name="score" type="number" min="0" max="100" step="any" required placeholder="0" inputmode="decimal"><span>/ 100</span></span><small>Enter a score from 0 to 100, including decimals.</small></label><p id="form-error" class="form-error" role="alert" hidden></p><div class="dialog-actions"><button type="button" class="button" data-close>Cancel</button><button type="submit" id="save-student" class="button primary">Add student</button></div></form></dialog>
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title"><div class="dialog-heading"><h2 id="confirm-title">Delete student?</h2><button class="icon-button" data-close aria-label="Close confirmation"><svg><use href="#i-close"/></svg></button></div><p id="confirm-description" class="dialog-description"></p><div class="dialog-actions"><button class="button" data-close autofocus>Cancel</button><button id="confirm-action" class="button danger">Delete student</button></div></dialog>
+  <dialog id="guide-dialog" aria-labelledby="guide-title"><div class="dialog-heading"><div><span class="eyebrow">THE GRADING POLICY</span><h2 id="guide-title">Every score, explained.</h2></div><button class="icon-button" data-close aria-label="Close grading guide"><svg><use href="#i-close"/></svg></button></div><p class="dialog-description">A score of 50 or above is a pass. Grade boundaries use the original score, before display rounding.</p><div class="grade-guide"><div><span class="grade grade-a">A</span><strong>80–100</strong><span>Excellent · Pass</span></div><div><span class="grade grade-b">B</span><strong>70–&lt;80</strong><span>Very good · Pass</span></div><div><span class="grade grade-c">C</span><strong>60–&lt;70</strong><span>Good · Pass</span></div><div><span class="grade grade-d">D</span><strong>50–&lt;60</strong><span>Satisfactory · Pass</span></div><div><span class="grade grade-f">F</span><strong>0–&lt;50</strong><span>Needs improvement · Fail</span></div></div><p class="dialog-description">This is the assignment’s default policy, not an official university grading policy. Class statistics always include all records, even when the table is filtered.</p><div class="dialog-actions"><button class="button primary" data-close>Got it</button></div></dialog>
+  <dialog id="architecture-dialog" aria-labelledby="architecture-title"><div class="dialog-heading"><div><span class="eyebrow">DATA STRUCTURES IN ACTION</span><h2 id="architecture-title">An array at the core.</h2></div><button class="icon-button" data-close aria-label="Close engine details"><svg><use href="#i-close"/></svg></button></div><p class="dialog-description">The C++ engine owns one fixed array of 1,000 Student structs. The browser only presents the engine’s results and saves a JSON snapshot.</p><pre><code>Student students_[1000];
+std::size_t count_ = 0;</code></pre><dl class="operation-list"><div><dt>Insert & update</dt><dd>Linear duplicate-ID lookup · O(n)</dd></div><div><dt>Delete</dt><dd>Find, then shift records left · O(n)</dd></div><div><dt>Search & statistics</dt><dd>Traverse the active array · O(n)</dd></div><div><dt>Sort</dt><dd>Stable insertion sort · O(n²)</dd></div></dl><p class="dialog-description">Grades, pass/fail, averages and distribution percentages run in C++ through WebAssembly. No database or JavaScript calculation fallback.</p><div class="dialog-actions"><button class="button primary" data-close>Back to class</button></div></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

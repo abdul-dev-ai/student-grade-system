@@ -1,0 +1,18 @@
+{
+  "name": "student-grade-system",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "C++17 fixed-array student grade dashboard compiled to WebAssembly",
+  "scripts": {
+    "build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1",
+    "build:static": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1 -StaticOnly",
+    "test": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test.ps1",
+    "test:wasm": "node tests/wasm.test.mjs",
+    "test:static": "node tests/static.test.mjs",
+    "test:pages": "node --experimental-vm-modules tests/pages.test.mjs",
+    "check": "node --check web/app.js && node --check web/persistence.js && node --check scripts/serve.mjs",
+    "start": "node scripts/serve.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

@@ -1,0 +1,71 @@
+name: Deploy Gradebook to GitHub Pages
+
+# Publishing is an explicit manual action, never a side effect of pushing code.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      EMSDK_VERSION: '6.0.12'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Run native C++ and JSON tests
+        shell: pwsh
+        run: ./scripts/test.ps1
+      - name: Build and test native CMake target
+        run: |
+          cmake -S . -B build/ci-native -DCMAKE_BUILD_TYPE=Release
+          cmake --build build/ci-native --parallel 2
+          ctest --test-dir build/ci-native --output-on-failure
+      - name: Install Emscripten and build WebAssembly
+        shell: bash
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$RUNNER_TEMP/emsdk"
+          "$RUNNER_TEMP/emsdk/emsdk" install "$EMSDK_VERSION"
+          "$RUNNER_TEMP/emsdk/emsdk" activate "$EMSDK_VERSION"
+          source "$RUNNER_TEMP/emsdk/emsdk_env.sh"
+          em++ --version
+          pwsh -NoProfile -File ./scripts/build.ps1
+      - name: Check JavaScript and generated distribution
+        run: |
+          npm run check
+          npm run test:static
+          npm run test:wasm
+          npm run test:pages
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload generated distribution
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
